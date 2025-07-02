@@ -1,0 +1,28 @@
+﻿@page "/appelapimethode1"
+
+<h3>Appel API Methode 1</h3>
+
+<button class="mt-3" @onclick="CallAPI">Cliquez ici pour appeler l'API</button>
+
+<div class="mt-3">
+    Résultat: @result
+</div>
+
+
+@code {
+    const string url = "https://localhost:7159/api/test";
+
+    string result = string.Empty;
+
+    private async Task CallAPI()
+    {
+        using (var httpClient = new HttpClient())
+        {
+            using (var response = await httpClient.GetAsync(url + "/bonjour/mike"))
+            {
+                var apiResponse = await response.Content.ReadAsStringAsync();
+                result = apiResponse;
+            }
+        }
+    }
+}
