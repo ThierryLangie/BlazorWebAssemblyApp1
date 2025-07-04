@@ -1,0 +1,48 @@
+﻿@page "/appelapimethode2"
+@using System.Text.Json
+@using AspNetCoreWebApi1.Models
+
+@inject IJSRuntime JSRuntime
+
+<h3>Appel API Méthode 2</h3>
+
+<button @onclick="CallAPI">Cliquez ici pour appeler l'API</button>
+
+<div class="mt-3">
+    <ul>
+        @foreach(User user in users)
+        {
+            <li>
+                @user.Prenom @user.Nom (@user.Email)
+            </li>
+        }
+    </ul>
+</div>
+
+@code 
+{
+    List<User> users = new List<User>();
+
+    const string url = "https://localhost:7159/api/test/";
+
+    public async Task CallAPI()
+    {
+        try
+        {
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync(url + "users");
+                var apiResponse = await response.Content.ReadAsStringAsync();
+
+                var data = JsonSerializer.Deserialize<List<User>>(apiResponse,
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                if (data != null) users = data;
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", ex.Message);
+        }
+    }
+}
